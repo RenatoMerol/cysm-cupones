@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYSM - Cupones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 24px;
+            color: #1a1a1a;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .search-box {
+            margin-bottom: 24px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            max-width: 500px;
+            display: block;
+            margin: 0 auto;
+            padding: 12px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.08);
+        }
+        
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 10px 16px;
+            background: white;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #666;
+        }
+        
+        .tab-button:hover {
+            border-color: #c41e3a;
+            color: #c41e3a;
+        }
+        
+        .tab-button.active {
+            background: #c41e3a;
+            color: white;
+            border-color: #c41e3a;
+        }
+        
+        .category-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            display: none;
+        }
+        
+        .category-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .category-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1.5px solid #c41e3a;
+            align-items: start;
+        }
+        
+        .header-left h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+        
+        .header-left p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .header-right {
+            background: #fff0f3;
+            border: 1.5px solid #f0d0d8;
+            border-radius: 8px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .info-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #c41e3a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 13px;
+            color: #1a1a1a;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .cupones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        @media (min-width: 1600px) {
+            .cupones-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        @media (min-width: 1200px) and (max-width: 1599px) {
+            .cupones-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 900px) and (max-width: 1199px) {
+            .cupones-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 600px) and (max-width: 899px) {
+            .cupones-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 599px) {
+            .cupones-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .cupon-card {
+            background: #f8f9fa;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 130px;
+        }
+        
+        .cupon-card:hover {
+            border-color: #c41e3a;
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.12);
+            transform: translateY(-3px);
+            background: white;
+        }
+        
+        .cupon-code {
+            font-weight: 700;
+            font-size: 14px;
+            color: #c41e3a;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        
+        .cupon-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .cupon-type {
+            font-size: 11px;
+            color: #888;
+            background: #efefef;
+            padding: 3px 8px;
+            border-radius: 3px;
+            width: fit-content;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .cupon-footer {
+            font-size: 11px;
+            color: #999;
+            padding-top: 8px;
+            border-top: 1px solid #e8e8e8;
+        }
+        
+        .empty-state {
+            background: #fffbeb;
+            border: 1.5px solid #fcd34d;
+            border-radius: 6px;
+            padding: 24px;
+            text-align: center;
+            color: #92400e;
+            grid-column: 1 / -1;
+            font-size: 14px;
+        }
+        
+        .stats {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+            padding: 0 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-box">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Buscar por código, valor o tipo..."
+                autocomplete="off"
+            >
+        </div>
+        
+        <div class="tabs-container" id="tabsContainer"></div>
+        <div id="categoriesContainer"></div>
+    </div>
+
+    <script>
+        const categoriesData = {"2U": {"titulo": "2U - IMPRESOS (POSTALES)", "tab_name": "POSTALES", "descripcion": "Cupones exclusivos para postales y materiales impresos que se env\u00edan por correo", "donde_encontrar": "Materiales impresos y postales por correo", "quien_puede_usarlo": "Todos los clientes", "cupones": {"2U20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2U40": {"value": "-40.0", "value_type": "percentage", "type": "Buy X Get Y"}, "2U50": {"value": "-50.0", "value_type": "percentage", "type": "Amount Off"}, "2UALL20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UBACK": {"value": "-10.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UBODY": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UBOOTY": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UBOYSHORT10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UBU": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UBUNDLE": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UBUTT": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "2UCURVY15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UDEALS": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UFAVS": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UFLATT": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UFULLBODY": {"value": "-11.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UGEL": {"value": "-58.0", "value_type": "percentage", "type": "Buy X Get Y"}, "2UGET15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UGET20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UGETMORE": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UGIVE": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UHGLASS": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "2ULOVWAIST": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UMAGAZINE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UMATCH": {"value": "-43.0", "value_type": "percentage", "type": "Buy X Get Y"}, "2UMEDICAL": {"value": "-15.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UMGZ": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2USHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2USHIP": {"value": "-100.0", "value_type": "percentage", "type": "Free Shipping"}, "2USHIPVIP": {"value": "-100.0", "value_type": "percentage", "type": "Free Shipping"}, "2USHOP": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2USIZE": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "2USOLD": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2USP": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2USTORE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2USURGERY": {"value": "-12.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2USWEAT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UTHANKS": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UTOP": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UTOP15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UTREND": {"value": "-5.0", "value_type": "fixed_amount", "type": "Amount Off"}, "2UTUMMY": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "2UVIP10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UVIP15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UVIP20": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "2UVIP30": {"value": "-30.0", "value_type": "percentage", "type": "Amount Off"}, "2UWEIGHT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "2UWELCOME": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "2UWLOST": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "2UWORKOUT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "4U": {"titulo": "4U - SMS/MENSAJES DE TEXTO", "tab_name": "SMS", "descripcion": "Cupones exclusivos que se env\u00edan \u00fanicamente por SMS o mensajes de texto", "donde_encontrar": "SMS y WhatsApp", "quien_puede_usarlo": "Todos los clientes", "cupones": {"4U10BUCKS": {"value": "-10.0", "value_type": "fixed_amount", "type": "Amount Off"}, "4U20BUCKS": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "4U2GET": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4U2SHAPE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4U2TRY": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UBODY": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UBODYSHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UCINCHER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UCOMFY": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UCURVES": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UCYSM": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UFAV": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "4UGIRDLE": {"value": "-25.0", "value_type": "percentage", "type": "Buy X Get Y"}, "4UGIRL": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UGIVEAWAY": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UMEN": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UNEXT15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "4URECOVERY": {"value": "-15.0", "value_type": "fixed_amount", "type": "Amount Off"}, "4URFIT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USHAPE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USHORT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USMS": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USOLD": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "4UWELCOME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UWINTER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UWLOSS": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}}}, "REVIEW": {"titulo": "REVIEW - RESE\u00d1AS Y REENV\u00cdOS", "tab_name": "RESE\u00d1AS", "descripcion": "Cupones para clientes que dejan rese\u00f1as o hacen reenv\u00edos en los medios donde compraron", "donde_encontrar": "Solicitudes de rese\u00f1a en redes sociales", "quien_puede_usarlo": "Clientes que dejan rese\u00f1a", "cupones": {"REVIEW15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "REVIEW20": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}}}, "CS": {"titulo": "CS - CUSTOMER SERVICE EXCLUSIVO", "tab_name": "SERVICIO", "descripcion": "Cupones de uso exclusivo para el equipo de Customer Service por tel\u00e9fono", "donde_encontrar": "Solo usado por el equipo de servicio al cliente", "quien_puede_usarlo": "Equipo de Customer Service (tel\u00e9fono)", "cupones": {"CS-LOVE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CS10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CSACTIVE": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "CSBOYSHORT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CSBRA": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "CSBUTT": {"value": "-12.0", "value_type": "fixed_amount", "type": "Amount Off"}, "CSHAPE10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CSHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CSOLDOUT": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "CSQUIZ": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "CSTHONG": {"value": "-10.0", "value_type": "fixed_amount", "type": "Amount Off"}, "CSURGERY": {"value": "-15.0", "value_type": "fixed_amount", "type": "Amount Off"}}}, "CYSM": {"titulo": "CYSM - GEN\u00c9RICOS (MULTI-CANAL)", "tab_name": "WEBSITE", "descripcion": "Cupones gen\u00e9ricos que se encuentran en todas partes del website", "donde_encontrar": "Website, p\u00e1gina de cupones, email, m\u00faltiples canales", "quien_puede_usarlo": "Todos los clientes", "cupones": {"CYSM10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CYSM15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "CYSM20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "CYSM30": {"value": "-30.0", "value_type": "percentage", "type": "Buy X Get Y"}, "CYSM4ME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CYSM4YOU": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "CYSMBF": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "CYSMFlash": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "CYSMLove": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CYSMQUEEN": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "NICE": {"titulo": "NICE - CAMPA\u00d1A ESPEC\u00cdFICA (EN TRANSICI\u00d3N)", "tab_name": "NICE", "descripcion": "Cupones de una campa\u00f1a espec\u00edfica anterior. Este grupo est\u00e1 siendo desactivado gradualmente", "donde_encontrar": "Varios (Legacy - en proceso de discontinuaci\u00f3n)", "quien_puede_usarlo": "Todos (con excepci\u00f3n de NICEVIP que es solo VIP)", "cupones": {"NICEBUY": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICECURVES": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "NICECYSM": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICEFIT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICELOOK": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICEMSN": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "NICESHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICESUPPORT": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICETASTE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICEVIP": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}}}, "VIP": {"titulo": "VIP - EXCLUSIVO CLIENTES VIP", "tab_name": "VIP", "descripcion": "Cupones exclusivos para clientes VIP (5+ compras). El sistema impide autom\u00e1ticamente que otros clientes los usen", "donde_encontrar": "Multi-canal", "quien_puede_usarlo": "Clientes VIP (5+ compras)", "cupones": {"GIVEVIP": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "HWVIP": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHIPVIP": {"value": "-100.0", "value_type": "percentage", "type": "Free Shipping"}, "URVIP15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "VIP15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "VIP30": {"value": "-30.0", "value_type": "percentage", "type": "Amount Off"}, "VIP99": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "VIPCART15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}}}, "SHAPE": {"titulo": "SHAPE/SHAPER - PRODUCTO ESPEC\u00cdFICO", "tab_name": "SHAPE", "descripcion": "Cupones para l\u00ednea espec\u00edfica de shapewear. Promoci\u00f3n enfocada en esta colecci\u00f3n", "donde_encontrar": "Email, Website", "quien_puede_usarlo": "Todos los clientes", "cupones": {"20SHAPER": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "2USHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4U2SHAPE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4UBODYSHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USHAPE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "4USHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "7DSHAPE12": {"value": "-12.0", "value_type": "fixed_amount", "type": "Amount Off"}, "CSHAPE10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CSHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "GETSHAPE": {"value": "-15.0", "value_type": "fixed_amount", "type": "Amount Off"}, "NEWSHAPER10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "NICESHAPER": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPE$20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "SHAPE10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPE15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPE17": {"value": "-17.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPE20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "SHAPE365": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPER10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPER2ME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPER4ME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPERDEAL": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPEU10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPEU15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "SHAPEU20": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}}}, "FLASH": {"titulo": "FLASH - PROMOCIONES DE CORTO TIEMPO", "tab_name": "FLASH", "descripcion": "Cupones para promociones exclusivas de corto plazo. Principalmente en emails como \"\u00faltima oportunidad\"", "donde_encontrar": "Email (principalmente)", "quien_puede_usarlo": "Todos los clientes", "cupones": {"FLASH12": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "FLASH15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "FLASH20": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}}}, "FB": {"titulo": "FB - FACEBOOK", "tab_name": "FACEBOOK", "descripcion": "Cupones otorgados \u00fanicamente a publicidad en Facebook (tanto social como ads pagados)", "donde_encontrar": "Facebook Ads + Social Media", "quien_puede_usarlo": "Todos los clientes", "cupones": {"CYSMFB": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "FB10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "FBM10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "WELCOME": {"titulo": "WELCOME - BIENVENIDA", "tab_name": "BIENVENIDA", "descripcion": "Cupones para primer contacto. Se entregan cuando una persona nueva proporciona email. Aparece en email de bienvenida", "donde_encontrar": "Email (Welcome series)", "quien_puede_usarlo": "Clientes nuevos", "cupones": {"2UWELCOME": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "4UWELCOME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "FIRSTTIME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "WELCOME10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "WELCOMETOCYSM": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "BIRTHDAY": {"titulo": "BIRTHDAY - CUMPLEA\u00d1OS", "tab_name": "CUMPLEA\u00d1OS", "descripcion": "Cupones enviados autom\u00e1ticamente cuando el cliente cumple a\u00f1os", "donde_encontrar": "Email (Birthday automation)", "quien_puede_usarlo": "Clientes en su cumplea\u00f1os", "cupones": {"BIRTHDAY15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "BIRTHDAY20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}}}, "GET": {"titulo": "GET - PRIMER CONTACTO / LANDING PAGES", "tab_name": "PRIMER CONTACTO", "descripcion": "Cupones para atraer primer contacto/conversi\u00f3n. Se muestran en landing pages de campa\u00f1a para animar compra inicial", "donde_encontrar": "Landing Pages, Email (Welcome)", "quien_puede_usarlo": "Clientes nuevos", "cupones": {"FORYOU10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "GET10NOW": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "GET20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "GET25": {"value": "-25.0", "value_type": "percentage", "type": "Amount Off"}, "GET40": {"value": "-40.0", "value_type": "percentage", "type": "Buy X Get Y"}, "GETBODY": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "GETCOMFORT": {"value": "-40.0", "value_type": "fixed_amount", "type": "Amount Off"}, "GETFREE": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "GETPREMIUM": {"value": "-25.0", "value_type": "fixed_amount", "type": "Amount Off"}, "GETSHAPE": {"value": "-15.0", "value_type": "fixed_amount", "type": "Amount Off"}, "GOALS10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "HAPPY10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "HAPPY15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "HELLO10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "HELLO15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "HEYBEAUTY10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "INSPIRE10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "JUST4U": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "JUST4U15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "LOVEYOURSELF10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "TRY15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "TRYME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "TRYME15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}}}, "EVERGREEN": {"titulo": "EVERGREEN - PROMOCIONES ACTIVAS", "tab_name": "EVERGREEN", "descripcion": "Promociones que corren constantemente sin publicidad activa. Est\u00e1n \"latentes\" en el sistema pero disponibles para quien las encuentre", "donde_encontrar": "Multi-canal (backend)", "quien_puede_usarlo": "Todos los clientes", "cupones": {"BEST12": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "BEST20": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "BOGO30": {"value": "-30.0", "value_type": "percentage", "type": "Buy X Get Y"}, "EXCLUSIVE10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SALE10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SAVEBIG20": {"value": "-20.0", "value_type": "fixed_amount", "type": "Amount Off"}, "UNDER99": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "ERROR": {"titulo": "ERROR/UBICACI\u00d3N - P\u00c1GINAS ESPEC\u00cdFICAS", "tab_name": "ERROR/CARRITO", "descripcion": "OOPS10: Mostrado en p\u00e1ginas 404 (error). CART/MYCART: Mostrado en emails de carrito abandonado", "donde_encontrar": "P\u00e1ginas de error, Email (Cart abandonment)", "quien_puede_usarlo": "Todos los clientes", "cupones": {"CART10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "HOME10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "MYCART10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "MYCART15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "OOPS10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "PRODUCTO": {"titulo": "PRODUCTO ESPEC\u00cdFICO - CATEGOR\u00cdA", "tab_name": "PRODUCTO", "descripcion": "Descuentos espec\u00edficos para productos, colecciones o l\u00edneas (Jeans, T\u00e9rmicos, Denim, etc.). Algunas funcionan como \"reactivaci\u00f3n\" para audiencias inactivas", "donde_encontrar": "Email, Website", "quien_puede_usarlo": "Todos los clientes", "cupones": {"APPAREL10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "BACK10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "BOOTY15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "BRA20": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "BUNDLE15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "CINCHME": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "CONTOUR15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "CURVY15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "DENIM10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "DENIM15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "JEANS10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "JEANS2": {"value": "-57.0", "value_type": "percentage", "type": "Buy X Get Y"}, "JEANS4X2": {"value": "-100.0", "value_type": "percentage", "type": "Buy X Get Y"}, "LUVWAIST": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "PROWAIST10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "SEAMLESS10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "THERMAL10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "TUMMY10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "TEMPORAL": {"titulo": "TEMPORAL/ESTACIONAL - PROMOCIONES ESPECIALES", "tab_name": "TEMPORAL", "descripcion": "Cupones para promociones mensuales o estacionales (Navidad, D\u00eda del Trabajo, Halloween, etc.). Tambi\u00e9n incluye MEDICAL10 para campa\u00f1a evergreen de productos m\u00e9dicos", "donde_encontrar": "Multi-canal (seg\u00fan temporada)", "quien_puede_usarlo": "Todos los clientes", "cupones": {"7DSHAPE12": {"value": "-12.0", "value_type": "fixed_amount", "type": "Amount Off"}, "BFF12": {"value": "-12.0", "value_type": "percentage", "type": "Amount Off"}, "BFF15": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "HW10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "LAST20": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "MEDICAL10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "RECOVERY10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "RECOVERY15": {"value": "-15.0", "value_type": "percentage", "type": "Buy X Get Y"}, "WDAY10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "XMAS10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "BLOG": {"titulo": "BLOG/CONTENIDO", "tab_name": "BLOG", "descripcion": "Cup\u00f3n mostrado \u00fanicamente en art\u00edculos del blog. Parte de estrategia de primer contacto a trav\u00e9s de contenido", "donde_encontrar": "Blog (solo)", "quien_puede_usarlo": "Todos los clientes", "cupones": {"BLOG10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "FOREVER": {"titulo": "FOREVER - VIP PERMANENTE", "tab_name": "FOREVER", "descripcion": "Cup\u00f3n especial otorgado a clientes que se convierten en VIP. 10% de descuento PARA SIEMPRE sin vencer", "donde_encontrar": "Uso permanente", "quien_puede_usarlo": "Clientes VIP (permanente)", "cupones": {"FOREVER10": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}, "INFLUENCER": {"titulo": "INFLUENCERS/AFILIADOS", "tab_name": "INFLUENCERS", "descripcion": "Cupones personales entregados a influencers/afiliados espec\u00edficos para que lo recomienden a su audiencia", "donde_encontrar": "Influencers/Afiliados", "quien_puede_usarlo": "Clientes a trav\u00e9s del influencer/afiliado", "cupones": {"Alyssa": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "BILLO-INFLUENCER": {"value": "-100.0", "value_type": "percentage", "type": "Amount Off"}, "Blancacustodio": {"value": "-50.0", "value_type": "percentage", "type": "Amount Off"}, "Princessleo28": {"value": "-50.0", "value_type": "percentage", "type": "Amount Off"}, "Shopify Collabs Gift Codes - 15% Off": {"value": "-15.0", "value_type": "percentage", "type": "Amount Off"}, "Shopify Collabs Gift Codes - 20% Off": {"value": "-20.0", "value_type": "percentage", "type": "Amount Off"}, "Shopify Collabs Tier Codes - Exclusive Affiliate ": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "Shopify Collabs Tier Codes - New Affiliate": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}, "Shopify Collabs Tier Codes - Pro Affiliate ": {"value": "-10.0", "value_type": "percentage", "type": "Amount Off"}}}};
+        const categoryOrder = ['2U', '4U', 'REVIEW', 'CS', 'CYSM', 'NICE', 'VIP', 'SHAPE', 'FLASH', 'FB', 'WELCOME', 'BIRTHDAY', 'GET', 'EVERGREEN', 'ERROR', 'PRODUCTO', 'TEMPORAL', 'BLOG', 'FOREVER', 'INFLUENCER'];
+        let currentTab = '2U';
+        let searchMode = false;
+        
+        function renderTabs() {
+            const container = document.getElementById('tabsContainer');
+            container.innerHTML = '';
+            categoryOrder.forEach(key => {
+                if (categoriesData[key]) {
+                    const btn = document.createElement('button');
+                    btn.className = 'tab-button' + (key === currentTab ? ' active' : '');
+                    btn.textContent = categoriesData[key].tab_name;
+                    btn.onclick = () => switchTab(key);
+                    container.appendChild(btn);
+                }
+            });
+        }
+        
+        function switchTab(key) {
+            searchMode = false;
+            document.getElementById('searchInput').value = '';
+            currentTab = key;
+            renderTabs();
+            renderCategories();
+        }
+        
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+            const keysToShow = searchMode ? categoryOrder : [currentTab];
+            
+            keysToShow.forEach(key => {
+                if (!categoriesData[key]) return;
+                const cat = categoriesData[key];
+                const section = document.createElement('div');
+                section.className = 'category-section' + (searchMode || key === currentTab ? ' active' : '');
+                
+                section.innerHTML = `
+                    <div class="category-header">
+                        <div class="header-left">
+                            <h2>${cat.titulo}</h2>
+                            <p>${cat.descripcion}</p>
+                        </div>
+                        <div class="header-right">
+                            <div class="info-item">
+                                <span class="info-label">Dónde lo encontrará</span>
+                                <span class="info-value">${cat.donde_encontrar}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Quién puede usarlo</span>
+                                <span class="info-value">${cat.quien_puede_usarlo}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cupones-grid" id="grid-${key}"></div>
+                    <div class="stats" id="stats-${key}"></div>
+                `;
+                
+                container.appendChild(section);
+                const grid = document.getElementById(`grid-${key}`);
+                const cuponesList = Object.entries(cat.cupones);
+                
+                if (cuponesList.length === 0) {
+                    grid.innerHTML = '<div class="empty-state">No se encontraron cupones</div>';
+                } else {
+                    cuponesList.forEach(([codigo, data]) => {
+                        const valor = data.value;
+                        const tipo = data.value_type;
+                        const valorDisplay = tipo === 'percentage' ? valor + '%' : '$' + Math.abs(parseFloat(valor)).toFixed(0);
+                        const card = document.createElement('div');
+                        card.className = 'cupon-card';
+                        card.innerHTML = `
+                            <div>
+                                <div class="cupon-code">${codigo}</div>
+                                <div class="cupon-value">${valorDisplay}</div>
+                                <div class="cupon-type">${tipo}</div>
+                            </div>
+                            <div class="cupon-footer">${data.type}</div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                    document.getElementById(`stats-${key}`).textContent = `${cuponesList.length} cupones`;
+                }
+            });
+        }
+        
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            if (searchTerm === '') {
+                searchMode = false;
+                currentTab = categoryOrder[0];
+                renderTabs();
+                renderCategories();
+                return;
+            }
+            searchMode = true;
+            const filtered = {};
+            categoryOrder.forEach(key => {
+                if (!categoriesData[key]) return;
+                filtered[key] = { ...categoriesData[key], cupones: {} };
+                Object.entries(categoriesData[key].cupones).forEach(([codigo, data]) => {
+                    if (
+                        codigo.toLowerCase().includes(searchTerm) ||
+                        data.value.toString().toLowerCase().includes(searchTerm) ||
+                        data.value_type.toLowerCase().includes(searchTerm) ||
+                        data.type.toLowerCase().includes(searchTerm)
+                    ) {
+                        filtered[key].cupones[codigo] = data;
+                    }
+                });
+            });
+            
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+            let totalResults = 0;
+            categoryOrder.forEach(key => {
+                if (!filtered[key] || Object.keys(filtered[key].cupones).length === 0) return;
+                const cat = filtered[key];
+                const section = document.createElement('div');
+                section.className = 'category-section active';
+                section.innerHTML = `
+                    <div class="category-header">
+                        <div class="header-left">
+                            <h2>${cat.titulo}</h2>
+                        </div>
+                        <div class="header-right">
+                            <div class="info-item">
+                                <span class="info-label">Dónde lo encontrará</span>
+                                <span class="info-value">${cat.donde_encontrar}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Quién puede usarlo</span>
+                                <span class="info-value">${cat.quien_puede_usarlo}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cupones-grid" id="grid-${key}"></div>
+                    <div class="stats" id="stats-${key}"></div>
+                `;
+                container.appendChild(section);
+                const grid = document.getElementById(`grid-${key}`);
+                Object.entries(cat.cupones).forEach(([codigo, data]) => {
+                    totalResults++;
+                    const valor = data.value;
+                    const tipo = data.value_type;
+                    const valorDisplay = tipo === 'percentage' ? valor + '%' : '$' + Math.abs(parseFloat(valor)).toFixed(0);
+                    const card = document.createElement('div');
+                    card.className = 'cupon-card';
+                    card.innerHTML = `
+                        <div>
+                            <div class="cupon-code">${codigo}</div>
+                            <div class="cupon-value">${valorDisplay}</div>
+                            <div class="cupon-type">${tipo}</div>
+                        </div>
+                        <div class="cupon-footer">${data.type}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+                document.getElementById(`stats-${key}`).textContent = `${Object.keys(cat.cupones).length} cupones`;
+            });
+            
+            if (totalResults === 0) {
+                container.innerHTML = '<div class="empty-state">No se encontraron cupones para: "<strong>' + searchTerm + '</strong>"</div>';
+            }
+        });
+        
+        renderTabs();
+        renderCategories();
+    </script>
+</body>
+</html>
